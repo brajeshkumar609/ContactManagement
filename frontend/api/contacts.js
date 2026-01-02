@@ -1,4 +1,4 @@
-const { connect, mongoose } = require('./_db');
+import { connect, mongoose } from './_db.js';
 
 const contactSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
@@ -10,7 +10,7 @@ const contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.models.Contact || mongoose.model('Contact', contactSchema);
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   const origin = process.env.CORS_ORIGIN || '*';
   res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
@@ -39,4 +39,4 @@ module.exports = async (req, res) => {
     console.error('API error', err);
     return res.status(500).json({ error: 'Server error' });
   }
-};
+}

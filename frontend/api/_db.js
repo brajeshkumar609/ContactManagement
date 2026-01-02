@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 // Cache connection across lambda invocations (Vercel serverless)
 let cached = global._mongoCache;
 if (!cached) cached = global._mongoCache = { conn: null, promise: null };
 
-async function connect() {
+export async function connect() {
   if (cached.conn) {
     return cached.conn;
   }
@@ -22,4 +22,4 @@ async function connect() {
   return cached.conn;
 }
 
-module.exports = { connect, mongoose };
+export { mongoose };
