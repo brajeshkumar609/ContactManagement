@@ -27,7 +27,12 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-      const { name, email, phone, message } = req.body || {};
+      // Robust body parsing: Vercel may provide raw JSON string in req.body
+      let body = req.body || {};
+      if (typeof body === 'string') {
+        try { body = JSON.parse(body); } catch (e) { return res.status(400).json({ error: 'Invalid JSON body' }); }
+      }
+      const { name, email, phone, message } = body;
       if (!name || !phone) return res.status(400).json({ error: 'name and phone are required' });
       const doc = await Contact.create({ name, email, phone, message });
       return res.status(201).json(doc);
@@ -37,6 +42,7 @@ export default async function handler(req, res) {
     return res.status(405).end('Method Not Allowed');
   } catch (err) {
     console.error('API error', err);
-    return res.status(500).json({ error: 'Server error' });
+    // Return sanitized error message for debugging (remove before production)
+    return res.status(500).json({ error: err && err.message ? err.message : String(err) });
   }
 }
